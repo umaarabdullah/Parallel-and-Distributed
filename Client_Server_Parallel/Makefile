@@ -5,7 +5,7 @@ LDFLAGS = -lws2_32
 all: server client
 
 server: server.c
-	$(CC) $(CFLAGS) -o server server.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -o server server.c $(LDFLAGS) -L"C:\Program Files (x86)\sqlite" -lsqlite3
 
 run_server: server
 	./server
