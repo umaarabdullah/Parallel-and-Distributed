@@ -3,7 +3,7 @@
 #include <string.h>
 #include <winsock2.h>
 #include <process.h> // For _beginthreadex
-#include <sqlite3.h>
+#include "sqlite/sqlite3.h"
 
 #define PORT 8080
 #define MAX_CLIENTS 5
@@ -13,6 +13,41 @@
 unsigned __stdcall clientThread(void* param);
 
 int main() {
+
+    sqlite3* db;
+    char* errMsg = 0;
+    int rc;
+
+    // Step 1: Open the database or create if it doesn't exist
+    rc = sqlite3_open("mydatabase.db", &db);
+    if (rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        return 1;
+    } else {
+        printf("Opened database successfully\n");
+    }
+
+    // Step 2: Execute SQL queries
+    char* createTableSQL = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);";
+    rc = sqlite3_exec(db, createTableSQL, 0, 0, &errMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", errMsg);
+        sqlite3_free(errMsg);
+    } else {
+        printf("Table created successfully\n");
+    }
+
+    char* insertDataSQL = "INSERT INTO users (name, age) VALUES ('John', 30);";
+    rc = sqlite3_exec(db, insertDataSQL, 0, 0, &errMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", errMsg);
+        sqlite3_free(errMsg);
+    } else {
+        printf("Data inserted successfully\n");
+    }
+
+    // Step 3: Close the database
+    sqlite3_close(db);
 
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
