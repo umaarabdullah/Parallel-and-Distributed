@@ -20,6 +20,44 @@ int main() {
         return 1;
     }
 
+    /* SQLite db handling */
+    sqlite3* db;
+    int rc = sqlite3_open("database/knock_knock_jokes.db", &db);
+
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return 1;
+    }
+
+    sqlite3_stmt* stmt;
+    const char* query = "SELECT * FROM setup;";
+
+    rc = sqlite3_prepare_v2(db, query, -1, &stmt, 0);
+
+    // exception handling
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Failed to execute query: %s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return 1;
+    }
+
+    // while (sqlite3_step(stmt) == SQLITE_ROW) {
+    //     // Fetch data here and print or process as needed
+    //     int id = sqlite3_column_int(stmt, 0);
+    //     const char* setup_text = (const char*)sqlite3_column_text(stmt, 1);
+    //     const char* response_text = (const char*)sqlite3_column_text(stmt, 2);
+
+    //     printf("ID: %d\n", id);
+    //     printf("Setup: %s\n", setup_text);
+    //     printf("Response: %s\n", response_text);
+    // }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    
+
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
