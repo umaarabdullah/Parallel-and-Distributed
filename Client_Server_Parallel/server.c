@@ -276,7 +276,6 @@ unsigned __stdcall clientThread(void* param) {
                 }
                 else{
                     firstMessageFlag = true;    // flag to start another knock knock joke
-                    // send ack
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                     strcpy(buffer, "ack");  // acknowledgement
                     send(client_socket, buffer, strlen(buffer), 0);
@@ -294,7 +293,6 @@ unsigned __stdcall clientThread(void* param) {
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 visitedJoke[jokeID] = false;    // mark joke as not visited
                 firstMessageFlag = true;
-                break;
             }
         }
 
