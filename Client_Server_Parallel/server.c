@@ -181,7 +181,7 @@ unsigned __stdcall clientThread(void* param) {
                 firstMessageFlag = true;
             }
         }
-        else{
+        else{   // fetch jokes from database
 
         }
 
