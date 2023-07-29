@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
 #include <winsock2.h>
 #include <process.h> // For _beginthreadex
 #include "sqlite/sqlite3.h"
@@ -9,8 +11,11 @@
 #define MAX_CLIENTS 5
 #define BUFFER_SIZE 1024
 
+/*********Function Prototypes********************************/
 // Function to handle client connections in a separate thread
 unsigned __stdcall clientThread(void* param);
+bool caseInsensitiveStringCompare(const char* str1, const char* str2);
+void removeNewline(char* str);
 
 int main() {
 
@@ -100,6 +105,7 @@ int main() {
         // Spawn a new thread to handle the client connection
         unsigned threadId;
         _beginthreadex(NULL, 0, clientThread, (void*)(uintptr_t)new_socket, 0, &threadId);
+        
     }
 
     closesocket(server_fd);
@@ -108,25 +114,77 @@ int main() {
     return 0;
 }
 
+void removeNewline(char* str){
+    int len = strlen(str);
+    for (int i = 0; i < len; i++) {
+        if (str[i] == '\n') {
+            str[i] = '\0';
+            break;
+        }
+    }
+}
+
+// Function to check if two strings are equal (case-insensitive)
+bool caseInsensitiveStringCompare(const char* str1, const char* str2) {
+    while (*str1 && *str2) {
+        if (tolower(*str1) != tolower(*str2)) {
+            return false;
+        }
+        str1++;
+        str2++;
+    }
+    // If both strings have reached the end, they are equal
+    return (*str1 == '\0' && *str2 == '\0');
+}
+
 unsigned __stdcall clientThread(void* param) {
     int client_socket = (int)(uintptr_t)param;
     char buffer[BUFFER_SIZE] = {0};
     int valread;
+    bool firstMessageFlag = true;
+    bool correctResponseFlag = false;
 
     // Receive and send messages
     while (1) {
-        valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
-        if (valread <= 0) {
-            break; // Client disconnected or an error occurred
+
+        // send joke to client
+        if(firstMessageFlag){
+            char joke[] = "Knock knock!\n";
+            send(client_socket, joke, strlen(joke), 0);
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
+            // recieve response from client
+            valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
+            if (valread <= 0) {
+                break; // Client disconnected or an error occurred
+            }
+            printf("Client: %s", buffer);
+            
+            // check spelling of response message from client
+            removeNewline(buffer);
+            if(caseInsensitiveStringCompare(buffer, "Who's there?")){
+                correctResponseFlag = true;
+                firstMessageFlag = false;
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "ack");  // acknowledgement
+                send(client_socket, buffer, strlen(buffer), 0);
+            }
+            else{
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "nack");  // non-acknowledgement
+                send(client_socket, buffer, strlen(buffer), 0);
+
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "You are supposed to say, \"Who's there?\". Let's try again.\n");
+                send(client_socket, buffer, strlen(buffer), 0);
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                firstMessageFlag = true;
+            }
+        }
+        else{
+
         }
 
-        printf("Client: %s", buffer);
-
-        // Send a response back to the client
-        char response[] = "Server received your message\n";
-        send(client_socket, response, strlen(response), 0);
-
-        memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
     }
 
     printf("Client disconnected\n");
