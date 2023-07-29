@@ -41,10 +41,13 @@ int main() {
     }
 
     printf("Connected to the server\n");
+
+    printf("*********************************Test 1***************************************\n\n");
     
     char ackMsg[] = "ack";
     bool ackFlag = true;
     int sequence_num = 0;
+    char clientTerminationMsg[] = "I have no more jokes to tell.\n";
     int joke_num = 1;
     printf("Joke: %d\n", joke_num);
 
@@ -55,7 +58,11 @@ int main() {
         if (valread <= 0) {
             break; // Server closed the connection or an error occurred
         }
+        
         printf("Server: %s", buffer);
+
+        if(strcmp(buffer, clientTerminationMsg) == 0)
+            break;  // shutdown client
 
         char setup[100];
         memset(setup, 0, 100);

@@ -42,9 +42,10 @@ int main() {
 
     printf("Connected to the server\n");
     
-    char ackMsg[] = "ack";
+    char ackMsg[] = "ack";      // ack and nack will keep the client informed whether client gave the correct response to server or not
     bool ackFlag = true;
     int sequence_num = 0;
+    char clientTerminationMsg[] = "I have no more jokes to tell.\n";
 
     // Send and receive messages
     while (1) {
@@ -54,6 +55,10 @@ int main() {
             break; // Server closed the connection or an error occurred
         }
         printf("Server: %s", buffer);
+        
+        if(strcmp(buffer, clientTerminationMsg) == 0)
+            break;  // shutdown client
+
         memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
         if(ackFlag){    // send response to server

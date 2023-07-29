@@ -135,6 +135,15 @@ unsigned __stdcall clientThread(void* param) {
     // Receive and send messages
     while (1) {
 
+        // If all jokes are visited then send termination msg to client
+        if(areAllJokesVisited(visitedJoke,jokeDatabaseSize)){       
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            strcpy(buffer, "I have no more jokes to tell.\n");
+            send(client_socket, buffer, strlen(buffer), 0);
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            break;
+        }
+
         // send joke to client
         if(firstMessageFlag){
             char joke[] = "Knock knock!\n";
@@ -174,15 +183,6 @@ unsigned __stdcall clientThread(void* param) {
             char setup_text_str[300];
             char response_text_str[300];
             char punchline_text_str[300];
-
-            // If all jokes are visited then send termination msg to client
-            if(areAllJokesVisited(visitedJoke,jokeDatabaseSize)){       
-                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                strcpy(buffer, "I have no more jokes to tell.\n");
-                send(client_socket, buffer, strlen(buffer), 0);
-                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                break;
-            }
 
             /******************SQLite Database handling********************************/
             sqlite3* db;
@@ -285,7 +285,7 @@ unsigned __stdcall clientThread(void* param) {
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                     strcpy(buffer, "nack");  // non-acknowledgement for Y/N
                     send(client_socket, buffer, strlen(buffer), 0);
-                    break;
+                    break;  // disconnect client
                 }
                 else if(buffer[0] == 'y' || buffer[0] == 'Y'){
                     firstMessageFlag = true;    // flag to start another knock knock joke
