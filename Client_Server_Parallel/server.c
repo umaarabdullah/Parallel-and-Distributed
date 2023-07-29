@@ -266,18 +266,17 @@ unsigned __stdcall clientThread(void* param) {
                 printf("Client: %s", buffer);
                 removeNewline(buffer);
                 if(buffer[0] == 'n' || buffer[0] == 'N'){
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                     firstMessageFlag = false;
                     // send nack
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    strcpy(buffer, "nack");  // non-acknowledgement
+                    strcpy(buffer, "nack");  // non-acknowledgement for Y/N
                     send(client_socket, buffer, strlen(buffer), 0);
                     break;
                 }
-                else{
+                else if(buffer[0] == 'y' || buffer[0] == 'Y'){
                     firstMessageFlag = true;    // flag to start another knock knock joke
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    strcpy(buffer, "ack");  // acknowledgement
+                    strcpy(buffer, "ack");  // acknowledgement for Y/N
                     send(client_socket, buffer, strlen(buffer), 0);
                 }
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
