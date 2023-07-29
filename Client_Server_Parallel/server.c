@@ -117,7 +117,6 @@ unsigned __stdcall clientThread(void* param) {
     bool firstMessageFlag = true;
     bool visitedJoke[jokeDatabaseSize + 1];     // as db id starts from 1
     memset(visitedJoke, false, jokeDatabaseSize + 1);
-    bool clientWantMoreJokes = true;
 
     // Receive and send messages
     while (1) {
@@ -156,147 +155,148 @@ unsigned __stdcall clientThread(void* param) {
             }
         }
         else{   // fetch jokes from database
-            while(1){
 
-                char setup_text_str[300];
-                char response_text_str[300];
-                char punchline_text_str[300];
+            unsigned jokeID;
+            char setup_text_str[300];
+            char response_text_str[300];
+            char punchline_text_str[300];
 
-                // If all jokes are visited then send termination msg to client
-                if(areAllJokesVisited(visitedJoke,jokeDatabaseSize)){       
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    strcpy(buffer, "I have no more jokes to tell.\n");
-                    send(client_socket, buffer, strlen(buffer), 0);
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    clientWantMoreJokes = false;
-                    break;
-                }
+            // If all jokes are visited then send termination msg to client
+            if(areAllJokesVisited(visitedJoke,jokeDatabaseSize)){       
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "I have no more jokes to tell.\n");
+                send(client_socket, buffer, strlen(buffer), 0);
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                break;
+            }
 
-                /******************SQLite Database handling********************************/
-                sqlite3* db;
-                int rc = sqlite3_open("database/knock_knock_jokes.db", &db);
+            /******************SQLite Database handling********************************/
+            sqlite3* db;
+            int rc = sqlite3_open("database/knock_knock_jokes.db", &db);
 
-                if (rc != SQLITE_OK) {
-                    fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-                    sqlite3_close(db);
-                    return 1;
-                }
+            if (rc != SQLITE_OK) {
+                fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+                sqlite3_close(db);
+                return 1;
+            }
 
-                sqlite3_stmt* stmt;
+            sqlite3_stmt* stmt;
 
-                int random_joke_number = rand() % jokeDatabaseSize + 1;
-                while(visitedJoke[random_joke_number])       // jokes must not repeat and client must terminate when all jokes are shown
-                    random_joke_number = rand() % jokeDatabaseSize + 1;
-                
-                char query[300]; // Adjust the buffer size as per your query length
-                sprintf(query, "SELECT s.setup_text, s.response_text, p.punchline_text \
-                                FROM setup s \
-                                INNER JOIN punchline p ON s.id = p.setup_id \
-                                WHERE s.id = %d;", random_joke_number);
+            int random_joke_number = rand() % jokeDatabaseSize + 1;
+            while(visitedJoke[random_joke_number])       // jokes must not repeat and client must terminate when all jokes are shown
+                random_joke_number = rand() % jokeDatabaseSize + 1;
+            
+            char query[300]; // Adjust the buffer size as per your query length
+            sprintf(query, "SELECT s.setup_text, s.response_text, p.punchline_text \
+                            FROM setup s \
+                            INNER JOIN punchline p ON s.id = p.setup_id \
+                            WHERE s.id = %d;", random_joke_number);
 
-                rc = sqlite3_prepare_v2(db, query, -1, &stmt, 0);
+            rc = sqlite3_prepare_v2(db, query, -1, &stmt, 0);
 
-                // exception handling
-                if (rc != SQLITE_OK) {
-                    fprintf(stderr, "Failed to execute query: %s\n", sqlite3_errmsg(db));
-                    sqlite3_finalize(stmt);
-                    sqlite3_close(db);
-                    return 1;
-                }
-
-                if (sqlite3_step(stmt) == SQLITE_ROW) {
-                    // Fetch data
-                    int id = random_joke_number;
-                    const char* setup_text = (const char*)sqlite3_column_text(stmt, 0);
-                    const char* response_text = (const char*)sqlite3_column_text(stmt, 1);
-                    const char* punchline_text = (const char*)sqlite3_column_text(stmt, 2);
-
-                    strcpy(setup_text_str, setup_text);
-                    strcpy(response_text_str, response_text);
-                    strcpy(punchline_text_str, punchline_text);
-
-                    // printf("ID: %d\n", id);
-                    // printf("Setup: %s\n", setup_text);
-                    // printf("Response: %s\n", response_text);
-                    // printf("Punchline: %s\n", punchline_text);
-                    visitedJoke[id] = true;
-                    
-                } else {
-                    printf("Joke with ID %d not found in the database.\n", random_joke_number);
-                }
-
+            // exception handling
+            if (rc != SQLITE_OK) {
+                fprintf(stderr, "Failed to execute query: %s\n", sqlite3_errmsg(db));
                 sqlite3_finalize(stmt);
                 sqlite3_close(db);
+                return 1;
+            }
 
-                printf("Setup: %s\n", setup_text_str);
-                printf("Response: %s\n", response_text_str);
-                printf("Punchline: %s\n", punchline_text_str);
+            if (sqlite3_step(stmt) == SQLITE_ROW) {
+                // Fetch data
+                int id = random_joke_number;
+                const char* setup_text = (const char*)sqlite3_column_text(stmt, 0);
+                const char* response_text = (const char*)sqlite3_column_text(stmt, 1);
+                const char* punchline_text = (const char*)sqlite3_column_text(stmt, 2);
 
-                // send joke to client
-                strcat(setup_text_str, "\n");
-                send(client_socket, setup_text_str, strlen(setup_text_str), 0);
+                jokeID = id;
+                strcpy(setup_text_str, setup_text);
+                strcpy(response_text_str, response_text);
+                strcpy(punchline_text_str, punchline_text);
 
-                // recieve response from client
+                visitedJoke[jokeID] = true;
+                
+            } else {
+                printf("Joke with ID %d not found in the database.\n", random_joke_number);
+            }
+
+            sqlite3_finalize(stmt);
+            sqlite3_close(db);
+
+            printf("Setup: %s\n", setup_text_str);
+            printf("Response: %s\n", response_text_str);
+            printf("Punchline: %s\n", punchline_text_str);
+
+            // send joke to client
+            strcat(setup_text_str, "\n");
+            send(client_socket, setup_text_str, strlen(setup_text_str), 0);
+
+            // recieve response from client
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
+            if (valread <= 0) {
+                break; // Client disconnected or an error occurred
+            }
+            printf("Client: %s", buffer);
+            
+            // check spelling of response message from client
+            removeNewline(buffer);
+            if(caseInsensitiveStringCompare(buffer, response_text_str)){
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "ack");  // acknowledgement
+                send(client_socket, buffer, strlen(buffer), 0);
+
+                // append the punchline with question Y/N whether client wants more jokes or no
+                char final_punchline[500]; // Adjust the buffer size as needed
+                strcpy(final_punchline, punchline_text_str);
+                strcat(final_punchline, "\nServer: Would you like to listen to another? (Y/N)\n");
+
+                // send the punchline
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, final_punchline);
+                send(client_socket, buffer, strlen(buffer), 0);
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
+                // receive response from client
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
                 if (valread <= 0) {
-                    clientWantMoreJokes = false;
                     break; // Client disconnected or an error occurred
                 }
                 printf("Client: %s", buffer);
-                
-                // check spelling of response message from client
                 removeNewline(buffer);
-                if(caseInsensitiveStringCompare(buffer, response_text_str)){
+                if(buffer[0] == 'n' || buffer[0] == 'N'){
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    strcpy(buffer, "ack");  // acknowledgement
-                    send(client_socket, buffer, strlen(buffer), 0);
-
-                    // append the punchline with question Y/N whether client wants more jokes or no
-                    char final_punchline[500]; // Adjust the buffer size as needed
-                    strcpy(final_punchline, punchline_text_str);
-                    strcat(final_punchline, "\nWould you like to listen to another? (Y/N)\n");
-
-                    // send the punchline
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    strcpy(buffer, final_punchline);
-                    send(client_socket, buffer, strlen(buffer), 0);
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-
-                    // receive response from client
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
-                    if (valread <= 0) {
-                        break; // Client disconnected or an error occurred
-                    }
-                    printf("Client: %s", buffer);
-                    removeNewline(buffer);
-                    if(buffer[0] == 'n' || buffer[0] == 'N'){
-                        clientWantMoreJokes = false;
-                        memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                        break;
-                    }
-                    else
-                        clientWantMoreJokes = true;
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                }
-                else{
+                    firstMessageFlag = false;
+                    // send nack
                     memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                     strcpy(buffer, "nack");  // non-acknowledgement
                     send(client_socket, buffer, strlen(buffer), 0);
-
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    sprintf(buffer, "You are supposed to say, \"%s\". Let's try again.\n", response_text_str);
-                    send(client_socket, buffer, strlen(buffer), 0);
-                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-                    firstMessageFlag = true;
                     break;
                 }
+                else{
+                    firstMessageFlag = true;    // flag to start another knock knock joke
+                    // send ack
+                    memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                    strcpy(buffer, "ack");  // acknowledgement
+                    send(client_socket, buffer, strlen(buffer), 0);
+                }
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            }
+            else{
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                strcpy(buffer, "nack");  // non-acknowledgement
+                send(client_socket, buffer, strlen(buffer), 0);
+
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                sprintf(buffer, "You are supposed to say, \"%s\". Let's try again.\n", response_text_str);
+                send(client_socket, buffer, strlen(buffer), 0);
+                memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+                visitedJoke[jokeID] = false;    // mark joke as not visited
+                firstMessageFlag = true;
+                break;
             }
         }
-
-        if(!clientWantMoreJokes)
-            break;
 
     }
 
