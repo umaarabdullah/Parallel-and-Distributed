@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <winsock2.h>
 
 #define SERVER_IP "127.0.0.1" // Change this to the server IP if needed
@@ -40,14 +41,11 @@ int main() {
     }
 
     printf("Connected to the server\n");
+    char ackMsg[] = "ack";
+    bool ackFlag = true;
 
     // Send and receive messages
     while (1) {
-        printf("You: ");
-        fgets(buffer, BUFFER_SIZE, stdin);
-
-        // Send the message to the server
-        send(sock, buffer, strlen(buffer), 0);
 
         // Receive a response from the server
         valread = recv(sock, buffer, BUFFER_SIZE, 0);
@@ -55,8 +53,40 @@ int main() {
             break; // Server closed the connection or an error occurred
         }
         printf("Server: %s", buffer);
+        memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
+        if(ackFlag){    // send response to server
+            printf("You: ");
+            fgets(buffer, BUFFER_SIZE, stdin);  // fgets takes newline as input 
+
+            // Send the message to the server
+            send(sock, buffer, strlen(buffer), 0);
+        }
+        else{           // Receive a response from the server
+            valread = recv(sock, buffer, BUFFER_SIZE, 0);
+            if (valread <= 0) {
+                break; // Server closed the connection or an error occurred
+            }
+            printf("Server: %s", buffer);
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
+            printf("You: ");
+            fgets(buffer, BUFFER_SIZE, stdin);  // fgets takes newline as input 
+            // Send the message to the server
+            send(sock, buffer, strlen(buffer), 0);
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+        }
 
         memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+        // check for acknowledgment
+        valread = recv(sock, buffer, BUFFER_SIZE, 0);
+        if (valread <= 0) {
+            break; // Server closed the connection or an error occurred
+        }
+        if(strcmp(buffer, ackMsg) == 0)    // ack received
+            ackFlag = true;
+        else
+            ackFlag = false;
     }
 
     closesocket(sock);
