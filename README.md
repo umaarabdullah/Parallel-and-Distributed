@@ -2,4 +2,4 @@
 
 ## Required Packages
 ### make
-### sqlite windows precomplied binary and sqlite tools and sqlite amalgamate source files
+### sqlite windows precomplied binary & sqlite tools & sqlite amalgamation source files from the sqlite website.

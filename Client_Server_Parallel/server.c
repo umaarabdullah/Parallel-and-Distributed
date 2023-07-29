@@ -8,7 +8,7 @@
 #include "sqlite/sqlite3.h"
 
 #define PORT 8080
-#define MAX_CLIENTS 5
+#define MAX_CLIENTS 3
 #define BUFFER_SIZE 1024
 #define jokeDatabaseSize 30
 
@@ -18,6 +18,7 @@ unsigned __stdcall clientThread(void* param);
 bool caseInsensitiveStringCompare(const char* str1, const char* str2);
 void removeNewline(char* str);
 bool areAllJokesVisited(const bool visitedJokes[], int size);
+int num_connected_clients;
 
 int main() {
 
@@ -58,6 +59,18 @@ int main() {
 
     // Accept incoming connections and spawn threads for each client
     while (1) {
+
+        if (num_connected_clients >= MAX_CLIENTS) {
+            // Maximum number of clients reached, stop accepting new connections
+            printf("Maximum number of clients reached. Server will not accept new connections.\n");
+            while(num_connected_clients>0); // wait until all clients have disconnected
+
+            if (num_connected_clients == 0) {
+                printf("All clients have disconnected. Server will now shut down.\n");
+                break; // server shutdown
+            }
+        }
+
         if ((new_socket = accept(server_fd, (struct sockaddr*)&address, &addrlen)) 
                 == INVALID_SOCKET) {
             perror("accept failed");
@@ -65,6 +78,7 @@ int main() {
         }
 
         printf("Connection established with client\n");
+        num_connected_clients++;
 
         // Spawn a new thread to handle the client connection
         unsigned threadId;
@@ -298,6 +312,7 @@ unsigned __stdcall clientThread(void* param) {
     }
 
     printf("Client disconnected\n");
+    num_connected_clients--;
 
     closesocket(client_socket);
     return 0;

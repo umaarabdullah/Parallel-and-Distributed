@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall
 LDFLAGS = -lws2_32
 
-all: server client
+all: run_server run_client1 run_client2 run_client3
 
 server: server.c
 	$(CC) $(CFLAGS) -o server server.c $(LDFLAGS) -L"C:\Program Files (x86)\sqlite" -lsqlite3
@@ -21,6 +21,12 @@ client2: client.c
 
 run_client2: client2
 	./client2
+
+client3: client.c
+	$(CC) $(CFLAGS) -o client3 client.c $(LDFLAGS)
+
+run_client3: client3
+	./client3
 
 clean:
 	rm -f server client
