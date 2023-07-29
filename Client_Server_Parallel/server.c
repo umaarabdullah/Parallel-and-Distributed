@@ -60,7 +60,7 @@ int main() {
     // Accept incoming connections and spawn threads for each client
     while (1) {
 
-        if (num_connected_clients >= MAX_CLIENTS) {
+        if (num_connected_clients == MAX_CLIENTS) {
             // Maximum number of clients reached, stop accepting new connections
             printf("Maximum number of clients reached. Server will not accept new connections.\n");
             while(num_connected_clients>0); // wait until all clients have disconnected
@@ -83,7 +83,7 @@ int main() {
         // Spawn a new thread to handle the client connection
         unsigned threadId;
         _beginthreadex(NULL, 0, clientThread, (void*)(uintptr_t)new_socket, 0, &threadId);
-        
+
     }
 
     closesocket(server_fd);
