@@ -64,3 +64,39 @@ VALUES  ('Nobel ! that''s why I knocked!', 1),
         ('Stopwatch you''re doing and let me in!', 29),
         ('W. H. O.', 30);
 
+// Create a buffer to store the SQL query string
+            char query[300];
+            sprintf(query, "SELECT s.setup_text, s.response_text, p.punchline_text \
+                            FROM setup s \
+                            INNER JOIN punchline p ON s.id = p.setup_id \
+                            WHERE s.id = %d;", random_joke_number);
+
+            sqlite3_stmt* stmt;
+            // const char* query = "SELECT * FROM setup;";
+            rc = sqlite3_prepare_v2(db, query, -1, &stmt, 0);
+
+            // exception handling
+            if (rc != SQLITE_OK) {
+                fprintf(stderr, "Failed to execute query: %s\n", sqlite3_errmsg(db));
+                sqlite3_finalize(stmt);
+                sqlite3_close(db);
+                return 1;
+            }
+
+            if (sqlite3_step(stmt) == SQLITE_ROW) {
+                // Fetch data
+                int id = sqlite3_column_int(stmt, 0);
+                const char* setup_text = (const char*)sqlite3_column_text(stmt, 1);
+                const char* response_text = (const char*)sqlite3_column_text(stmt, 2);
+                const char* punchline_text = (const char*)sqlite3_column_text(stmt, 3);
+
+                printf("ID: %d\n", id);
+                printf("Setup: %s\n", setup_text);
+                printf("Response: %s\n", response_text);
+                printf("Punchline: %s\n", punchline_text);
+
+                // Optionally, update the 'visitedJoke' array to mark the joke as visited
+                visitedJoke[id] = true;
+            } else {
+                printf("Joke with ID %d not found in the database.\n", random_joke_number);
+            }
