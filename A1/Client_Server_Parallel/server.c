@@ -146,8 +146,10 @@ unsigned __stdcall clientThread(void* param) {
 
         // send joke to client
         if(firstMessageFlag){
-            char joke[] = "Knock knock!\n";
-            send(client_socket, joke, strlen(joke), 0);
+            printf("before knock \n");
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            strcpy(buffer,"Knock knock!\n");
+            send(client_socket, buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
             // recieve response from client
