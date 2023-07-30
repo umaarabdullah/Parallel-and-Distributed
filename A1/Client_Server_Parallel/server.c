@@ -28,10 +28,10 @@ int main() {
         return 1;
     }
 
-    int server_fd, new_socket, valread;
+    int server_fd, new_socket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
-    char buffer[BUFFER_SIZE] = {0};
+    // char buffer[BUFFER_SIZE] = {0};  as we are doing multi-threading server main does'nt require a buffer
 
     // Create a socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
