@@ -1,7 +1,10 @@
 On windows platform only !
 
-To run the Multi-Client Server System with 3 Clients
+To run the Multi-Client Server System with 3 Clients with localhost as server:
 	- Double Click on run.bat or type run.bat on terminal opened within the folder.
 
-To run the tests
+To run the tests with localhost as server :
 	- Double Click on run_tests.bat or type run_tests.bat on terminal opened within the folder.
+
+To run the tests one by one with another machine as server :
+	- Double Click on run_clients_test_1.bat or type run_clients_test_1.bat on terminal opened within the folder.
