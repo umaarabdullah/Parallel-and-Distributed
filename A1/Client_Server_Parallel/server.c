@@ -7,6 +7,7 @@
 #include <process.h> // For _beginthreadex
 #include "sqlite/sqlite3.h"
 
+#define SERVER_IP "192.168.68.107"
 #define PORT 8080
 #define MAX_CLIENTS 3
 #define BUFFER_SIZE 1024
@@ -39,8 +40,9 @@ int main() {
         return 1;
     }
 
+    memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_addr.s_addr = inet_addr(SERVER_IP);
     address.sin_port = htons(PORT);
 
     // Bind the socket to all available network interfaces

@@ -1,0 +1,7 @@
+On windows platform only !
+
+To run the Multi-Client Server System with 3 Clients
+	- Double Click on run.bat or type run.bat on terminal opened within the folder.
+
+To run the tests
+	- Double Click on run_tests.bat or type run_tests.bat on terminal opened within the folder.
