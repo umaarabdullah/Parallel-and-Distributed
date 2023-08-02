@@ -29,4 +29,4 @@ run_client3: client3
 	./client3
 
 clean:
-	rm -f server client
+	del server.exe client1.exe client2.exe client3.exe
