@@ -54,17 +54,20 @@ int main() {
 
     // Send and receive messages
     while (1) {
+
+        memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
         // Receive a response from the server
         valread = recv(sock, buffer, BUFFER_SIZE, 0);
         if (valread <= 0) {
             break; // Server closed the connection or an error occurred
         }
-        
         printf("Server: %s", buffer);
 
         if(strcmp(buffer, clientTerminationMsg) == 0)
             break;  // shutdown client
 
+        // copy the setup text
         char setup[100];
         memset(setup, 0, 100);
         if(sequence_num == 1){
@@ -125,7 +128,10 @@ int main() {
             // Send the message to the server
             send(sock, buffer, strlen(buffer), 0);
         }
-        else{           // Receive a response from the server
+        else{    // Receive a response from the server
+
+            memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+            
             valread = recv(sock, buffer, BUFFER_SIZE, 0);
             if (valread <= 0) {
                 break; // Server closed the connection or an error occurred

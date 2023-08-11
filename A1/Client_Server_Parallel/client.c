@@ -60,6 +60,7 @@ int main() {
     // Send and receive messages
     while (1) {
         // Receive a response from the server
+        memset(buffer, 0, BUFFER_SIZE);  // Clear the buffer
         valread = recv(sock, buffer, BUFFER_SIZE, 0);
         if (valread <= 0) {
             break;  // Server closed the connection or an error occurred
@@ -93,6 +94,8 @@ int main() {
             // Send the message to the server
             send(sock, buffer, strlen(buffer), 0);
         } else {  // Receive a response from the server
+
+            memset(buffer, 0, BUFFER_SIZE);  // Clear the buffer
             valread = recv(sock, buffer, BUFFER_SIZE, 0);
             if (valread <= 0) {
                 break;  // Server closed the connection or an error occurred

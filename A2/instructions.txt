@@ -1,0 +1,24 @@
+Use to start rpcbind
+    sudo service rpcbind start
+    or 
+    rpcbind
+then
+    rpcinfo
+
+"cannot find rpc/rpc.h" error will be shown if the following changes 
+    are not made in the makefile
+#   add -I/usr/include/tirpc to CFLAGS
+#   add -ltirpc to LDLIBS
+
+The following C libraries are included in name_svc.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+make command
+    make -f Makefile.name
+
+directory
+cd "/mnt/c/Users/Umaar/Documents/Parallel and Distributed/A2"
+
+

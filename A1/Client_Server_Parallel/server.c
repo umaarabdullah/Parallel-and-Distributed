@@ -13,7 +13,7 @@
 #define BUFFER_SIZE 1024
 #define jokeDatabaseSize 30
 
-/*********Function Prototypes********************************/
+/*********************Function Prototypes******************************/
 // Function to handle client connections in a separate thread
 unsigned __stdcall clientThread(void* param);
 bool caseInsensitiveStringCompare(const char* str1, const char* str2);
@@ -149,9 +149,10 @@ unsigned __stdcall clientThread(void* param) {
 
         // send joke to client
         if(firstMessageFlag){
-            printf("before knock \n");
+            // printf("before knock \n");
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
             strcpy(buffer,"Knock knock!\n");
+            printf("%s",buffer);
             send(client_socket, buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
@@ -177,6 +178,7 @@ unsigned __stdcall clientThread(void* param) {
 
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 strcpy(buffer, "You are supposed to say, \"Who's there?\". Let's try again.\n");
+                printf("%s",buffer);
                 send(client_socket, buffer, strlen(buffer), 0);
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 firstMessageFlag = true;
