@@ -5,17 +5,50 @@
  */
 
 #include "matrixOp.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 Matrix *
 matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 {
-	static Matrix  result;
+	if (argp == NULL) {
+        fprintf(stderr, "matrix_add_1_svc: Invalid input\n");
+        return NULL;
+    }
 
-	/*
-	 * insert server code here
-	 */
+	int rows, cols;
+	rows = argp->matrix1.rows;
+    cols = argp->matrix1.cols;
+	int totalElements = rows * cols;
 
-	return &result;
+    // Allocate memory for the Matrix struct and the data array
+    struct Matrix *result = malloc(sizeof(struct Matrix) + totalElements * sizeof(int));
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
+
+	/* Set dimensions for the result matrix */
+	result->rows = rows;
+	result->cols = cols;
+
+    /* Check if the matrices have the same dimensions */
+    if (argp->matrix1.rows != argp->matrix2.rows || argp->matrix1.cols != argp->matrix2.cols) {
+        fprintf(stderr, "matrix_add_1_svc: Matrices must have the same dimensions for addition\n");
+		free(result); // Free memory before returning NULL
+        return NULL;
+    }
+
+    /* Perform matrix addition */
+	int i, j;
+    for (i = 0; i < argp->matrix1.rows; i++) {
+        for (j = 0; j < argp->matrix1.cols; j++) {
+            result->data[i*result->cols + j] = argp->matrix1.data[i*argp->matrix1.cols + j] +
+                                             argp->matrix2.data[i*argp->matrix2.cols + j];
+        }
+    }
+
+	return result;
 }
 
 Matrix *

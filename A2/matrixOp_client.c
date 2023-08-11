@@ -5,6 +5,9 @@
  */
 
 #include "matrixOp.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 void
@@ -44,6 +47,9 @@ matrix_prog_1(char *host)
 	if (result_4 == (Matrix *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
+
+	free(result_1);
+
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
@@ -54,12 +60,36 @@ int
 main (int argc, char *argv[])
 {
 	char *host;
+	char *op;
+	char *in;
 
 	if (argc < 2) {
 		printf ("usage: %s server_host\n", argv[0]);
 		exit (1);
 	}
 	host = argv[1];
-	matrix_prog_1 (host);
+	op = argv[2];
+	in = argv[3];
+
+	if(strcmp(op, "matrix_add") == 0){	// second argument must be matrix operation name
+		
+		// Open the input file
+		FILE *inputFile = fopen("input.txt", "r");
+		if (inputFile == NULL) {
+			perror("Error opening file");
+			return 1;
+		}
+
+		// Read and process the contents of the file
+		char buffer[1024];
+		while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
+			// Process each line of the file here
+			printf("Line: %s", buffer);
+		}
+
+		fclose(inputFile);	// Close the file
+	}
+
+	// matrix_prog_1 (host);
 exit (0);
 }
