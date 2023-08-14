@@ -21,4 +21,8 @@ make command
 directory
 cd "/mnt/c/Users/Umaar/Documents/Parallel and Distributed/A2"
 
+client program commandline arguments must be contain
+                hostname matrix_operation_name input_filename.txt
+            Ex: ./matrixOp_client localhost matrix_add input.txt
+
 

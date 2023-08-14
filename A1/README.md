@@ -2,7 +2,7 @@
 
 ## Required Packages
 
-### make for windows
+### make for windows and add path to environment variable
 
 ### (Not Necessary) sqlite windows precomplied binary & sqlite tools & sqlite amalgamation source files from the sqlite website.
 
