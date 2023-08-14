@@ -6,6 +6,7 @@
 #include <winsock2.h>
 #include <process.h> // For _beginthreadex
 #include "sqlite/sqlite3.h"
+#include "windows.h"
 
 // #define SERVER_IP "192.168.68.107"
 #define SERVER_IP "192.168.68.111"
@@ -21,6 +22,8 @@ bool caseInsensitiveStringCompare(const char* str1, const char* str2);
 void removeNewline(char* str);
 bool areAllJokesVisited(const bool visitedJokes[], int size);
 int num_connected_clients;
+
+CRITICAL_SECTION criticalSection;
 
 int main() {
 
@@ -60,6 +63,9 @@ int main() {
     }
 
     printf("Server listening on all interfaces on port %d\n", PORT);
+
+    // In your initialization code
+    InitializeCriticalSection(&criticalSection);
 
     // Accept incoming connections and spawn threads for each client
     while (1) {
@@ -137,7 +143,7 @@ unsigned __stdcall clientThread(void* param) {
     memset(visitedJoke, false, jokeDatabaseSize + 1);
 
     // Receive and send messages
-    while (1) {
+    while (1) {        
 
         // If all jokes are visited then send termination msg to client
         if(areAllJokesVisited(visitedJoke,jokeDatabaseSize)){       
@@ -147,6 +153,9 @@ unsigned __stdcall clientThread(void* param) {
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
             break;
         }
+
+        // In thread function
+        EnterCriticalSection(&criticalSection);
 
         // send joke to client
         if(firstMessageFlag){
@@ -316,6 +325,9 @@ unsigned __stdcall clientThread(void* param) {
                 firstMessageFlag = true;
             }
         }
+
+        // Access and modify shared resource
+        LeaveCriticalSection(&criticalSection);
 
     }
 
