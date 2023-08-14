@@ -4,6 +4,10 @@
 
 ### make for windows and add path to environment variable
 
+### if sqlite.dll causes problems then change rule in Makefile
+    server: server.c
+    $(CC) $(CFLAGS) -o server server.c sqlite/sqlite3.c $(LDFLAGS)
+
 ### sqlite windows precomplied binary & sqlite tools & sqlite amalgamation source files from the sqlite website.
 
 ### copy sqlite from the requirements folder and paste it to C:\Program Files (x86)\sqlite

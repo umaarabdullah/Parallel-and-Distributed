@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <winsock2.h>
 
-#define SERVER_IP "127.0.0.1"
-// #define SERVER_IP "192.168.68.107"
+// #define SERVER_IP "127.0.0.1"
+#define SERVER_IP "192.168.68.111"
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
@@ -60,7 +60,7 @@ int main() {
             break; // Server closed the connection or an error occurred
         }
         
-        printf("Server: %s", buffer);
+        printf("1st Server Msg : %s", buffer);
 
         if(strcmp(buffer, clientTerminationMsg) == 0)
             break;  // shutdown client
@@ -106,7 +106,6 @@ int main() {
                         sprintf(buffer, "%s?\n",setup);     // WRONG RESPONSE
                         printf("%s",buffer);
                     }
-                    trial_num++;
                 }
                 else{
                     printf("You: ");
@@ -159,15 +158,14 @@ int main() {
             sequence_num++;
             if(sequence_num == 3){   // each jokes can go upto highest sequence number 3 then a new trial will start
                 sequence_num = 0;
-                trial_num++;
                 printf("trial: %d\n", trial_num);
             }
         }
         else{                               // nack received
             ackFlag = false;
             sequence_num = 0;
-            trial_num++;
         }
+        trial_num++;
     }
 
     closesocket(sock);
