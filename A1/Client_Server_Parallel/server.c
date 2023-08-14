@@ -154,17 +154,20 @@ unsigned __stdcall clientThread(void* param) {
             break;
         }
 
-        // In thread function
-        EnterCriticalSection(&criticalSection);
-
         // send joke to client
         if(firstMessageFlag){
-            // printf("before knock \n");
+            
+            // In thread function
+            EnterCriticalSection(&criticalSection);
+
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
             strcpy(buffer,"Knock knock!\n");
             printf("%s",buffer);
             send(client_socket, buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
+
+            // Access and modify shared resource
+            LeaveCriticalSection(&criticalSection);
 
             // recieve response from client
             valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
@@ -317,17 +320,20 @@ unsigned __stdcall clientThread(void* param) {
                 strcpy(buffer, "nack");  // non-acknowledgement
                 send(client_socket, buffer, strlen(buffer), 0);
 
+                // In thread function
+                EnterCriticalSection(&criticalSection);
+
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 sprintf(buffer, "You are supposed to say, \"%s\". Let's try again.\n", response_text_str);
                 send(client_socket, buffer, strlen(buffer), 0);
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 visitedJoke[jokeID] = false;    // mark joke as not visited
                 firstMessageFlag = true;
+
+                // Access and modify shared resource
+                LeaveCriticalSection(&criticalSection);
             }
         }
-
-        // Access and modify shared resource
-        LeaveCriticalSection(&criticalSection);
 
     }
 
