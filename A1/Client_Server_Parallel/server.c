@@ -166,7 +166,6 @@ unsigned __stdcall clientThread(void* param) {
             send(client_socket, buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
-            // Access and modify shared resource
             LeaveCriticalSection(&criticalSection);
 
             // recieve response from client
@@ -330,7 +329,6 @@ unsigned __stdcall clientThread(void* param) {
                 visitedJoke[jokeID] = false;    // mark joke as not visited
                 firstMessageFlag = true;
 
-                // Access and modify shared resource
                 LeaveCriticalSection(&criticalSection);
             }
         }

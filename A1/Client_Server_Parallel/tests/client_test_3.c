@@ -129,7 +129,7 @@ int main() {
             if (valread <= 0) {
                 break; // Server closed the connection or an error occurred
             }
-            printf("Server: %s", buffer);
+            printf("2nd Server Msg : %s", buffer);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
             printf("You: ");
