@@ -106,7 +106,6 @@ main (int argc, char *argv[])
 {
 	char *host;
 	char *op;
-	char *in;
 
 	if (argc < 2) {
 		printf ("usage: %s server_host\n", argv[0]);
@@ -114,7 +113,6 @@ main (int argc, char *argv[])
 	}
 	host = argv[1];
 	op = argv[2];
-	in = argv[3];
 
 	read_input_file(in);
 
