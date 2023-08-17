@@ -75,6 +75,7 @@ matrix_prog_1(char *host, const char *op)
 		result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
 		if (result_3 == (Matrix *) NULL) {
 			clnt_perror (clnt, "call failed");
+			fprintf(stderr, "Matrix is not invertible !\n");
 		}
 
 		if(result_3 != NULL)
@@ -186,19 +187,6 @@ void read_input_file(const int numOfInputMatrices){
 		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
 			fscanf(inputFile, "%d", &matrix2.data[i]);
 		}
-
-		// for (int i = 0; i < matrix1.rows; i++) {
-		// 	for (int j = 0; j < matrix1.cols; j++) {
-		// 		printf("%d ", matrix1.data[i * matrix1.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
-		// for (int i = 0; i < matrix2.rows; i++) {
-		// 	for (int j = 0; j < matrix2.cols; j++) {
-		// 		printf("%d ", matrix2.data[i * matrix2.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
 	}
 	else if(numOfInputMatrices == 1){
 		int rows, cols, totalElements;
@@ -211,15 +199,9 @@ void read_input_file(const int numOfInputMatrices){
 		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
 			fscanf(inputFile, "%d", &matrix1.data[i]);
 		}
-
-		// for (int i = 0; i < matrix1.rows; i++) {
-		// 	for (int j = 0; j < matrix1.cols; j++) {
-		// 		printf("%d ", matrix1.data[i * matrix1.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
 	}
 
 	fclose(inputFile);	// Close the file
 	
 }
+
