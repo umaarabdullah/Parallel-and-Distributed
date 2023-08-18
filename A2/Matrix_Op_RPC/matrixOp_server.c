@@ -5,10 +5,11 @@
  */
 
 #include "matrixOp.h"
+#include <math.h>
 
 /** Function Prototypes **/
 int perform_gaussian_elimination(Matrix *, Matrix *);
-int determinant(int, int []);
+double determinant(int, double []);
 
 Matrix *
 matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
@@ -20,15 +21,13 @@ matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
         return NULL;
     }
 
-	int rows, cols, totalElements;
+	int rows, cols;
 	
 	rows = argp->matrix1.rows;
     cols = argp->matrix1.cols;
-	totalElements = rows * cols;
 	
 	rows = argp->matrix2.rows;
     cols = argp->matrix2.cols;
-	totalElements = rows * cols;
 
 	result.rows = rows;
 	result.cols = cols;
@@ -79,6 +78,63 @@ matrix_mul_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 	return &result;
 }
 
+Matrix *
+matrix_inverse_1_svc(Matrix *argp, struct svc_req *rqstp)
+{
+	static Matrix result;
+
+	// Check if the matrix is square
+    if (argp->rows != argp->cols){
+        fprintf(stderr, "Matrix is not square, cannot be inverted\n");
+        return NULL;
+    }
+
+	// check if matrix is singular or not
+	double det = determinant(argp->cols, argp->data);
+	printf("Determinant: %lf\n", det);
+	if(det == 0){
+		fprintf(stderr, "Matrix is singular, cannot be inverted\n");
+        return NULL;
+	}
+
+	result.rows = argp->rows;
+    result.cols = argp->cols;
+
+	// Perform Gaussian elimination to find the inverse
+    if (perform_gaussian_elimination(argp, &result) == -1) {
+        fprintf(stderr, "Matrix inversion failed\n");
+        return NULL;
+    }
+
+	return &result;
+}
+
+Matrix *
+matrix_transpose_1_svc(Matrix *argp, struct svc_req *rqstp)
+{
+	static Matrix result;
+
+    // Check if argp is NULL
+    if (argp == NULL) {
+        fprintf(stderr, "matrix_transpose_1_svc: Invalid input\n");
+        return NULL;
+    }
+
+    // Set dimensions for the result matrix (transpose)
+    result.rows = argp->cols;
+    result.cols = argp->rows;
+
+    // Compute the transpose of the matrix
+    for (int i = 0; i < argp->rows; i++) {
+        for (int j = 0; j < argp->cols; j++) {
+            result.data[j * result.cols + i] = argp->data[i * argp->cols + j];
+        }
+    }
+
+	return &result;
+}
+
+// Take input matrix "mat" and return inverse matrix "inv"
 int perform_gaussian_elimination(Matrix *mat, Matrix *inv){
 	
 	int n = mat->rows;
@@ -102,7 +158,7 @@ int perform_gaussian_elimination(Matrix *mat, Matrix *inv){
         // Pivoting: Find the row with the largest pivot element
         int max_row = i;
         for (int k = i + 1; k < n; k++) {
-            if (abs(augmented.data[k * augmented.cols + i]) > abs(augmented.data[max_row * augmented.cols + i])) {
+            if (fabs(augmented.data[k * augmented.cols + i]) > fabs(augmented.data[max_row * augmented.cols + i])) {
                 max_row = k;
             }
         }
@@ -110,14 +166,14 @@ int perform_gaussian_elimination(Matrix *mat, Matrix *inv){
         // Swap rows if necessary
         if (max_row != i) {
             for (int j = 0; j < augmented.cols; j++) {
-                int temp = augmented.data[i * augmented.cols + j];
+                double temp = augmented.data[i * augmented.cols + j];
                 augmented.data[i * augmented.cols + j] = augmented.data[max_row * augmented.cols + j];
                 augmented.data[max_row * augmented.cols + j] = temp;
             }
         }
 
         // Perform elimination to make the pivot element 1
-        int pivot = augmented.data[i * augmented.cols + i];
+        double pivot = augmented.data[i * augmented.cols + i];
         if (pivot == 0) {
             fprintf(stderr, "Matrix is not invertible\n");
             return -1;
@@ -130,7 +186,7 @@ int perform_gaussian_elimination(Matrix *mat, Matrix *inv){
         // Apply the same row operations to the other rows to make the column elements 0
         for (int k = 0; k < n; k++) {
             if (k != i) {
-                int factor = augmented.data[k * augmented.cols + i];
+                double factor = augmented.data[k * augmented.cols + i];
                 for (int j = 0; j < augmented.cols; j++) {
                     augmented.data[k * augmented.cols + j] -= factor * augmented.data[i * augmented.cols + j];
                 }
@@ -150,16 +206,16 @@ int perform_gaussian_elimination(Matrix *mat, Matrix *inv){
 }
 
 // Function to calculate the determinant of a square matrix in 1D array format
-int determinant(int size, int matrix[]) {
+double determinant(int size, double matrix[]) {
     if (size == 1) {
         return matrix[0]; // For a 1x1 matrix, determinant is its only element
     }
     
-    int det = 0;
+    double det = 0;
     
     // Loop over the first row to expand the determinant using cofactor expansion
     for (int i = 0; i < size; i++) {
-        int minor[size - 1][size - 1];
+        double minor[size - 1][size - 1];
         
         // Create the minor matrix by skipping the current row and column
         for (int row = 1; row < size; row++) {
@@ -171,53 +227,9 @@ int determinant(int size, int matrix[]) {
         }
         
         // Calculate the determinant recursively for the minor matrix
-        int minorDet = determinant(size - 1, (int *)minor);
+        double minorDet = determinant(size - 1, (double *)minor);
         det += (i % 2 == 0 ? 1 : -1) * matrix[i] * minorDet;
     }
     
     return det;
-}
-
-
-Matrix *
-matrix_inverse_1_svc(Matrix *argp, struct svc_req *rqstp)
-{
-	static Matrix result;
-
-	// Check if the matrix is square
-    if (argp->rows != argp->cols){
-        fprintf(stderr, "Matrix is not square, cannot be inverted\n");
-        return NULL;
-    }
-
-	// check if matrix is singular or not
-	int det = determinant(argp->cols, argp->data);
-	printf("Det: %d\n", det);
-	if(det == 0){
-		fprintf(stderr, "Matrix is singular, cannot be inverted\n");
-        return NULL;
-	}
-
-	result.rows = argp->rows;
-    result.cols = argp->cols;
-
-	// Perform Gaussian elimination to find the inverse
-    if (perform_gaussian_elimination(argp, &result) == -1) {
-        fprintf(stderr, "Matrix inversion failed\n");
-        return NULL;
-    }
-
-	return &result;
-}
-
-Matrix *
-matrix_transpose_1_svc(Matrix *argp, struct svc_req *rqstp)
-{
-	static Matrix result;
-
-	/*
-	 * insert server code here
-	*/
-
-	return &result;
 }

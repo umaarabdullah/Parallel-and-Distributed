@@ -6,8 +6,10 @@ then
     rpcinfo to check if it is working or not
 
 "cannot find rpc/rpc.h" error will be shown if the following changes are not made in the makefile
-#   add -I/usr/include/tirpc to CFLAGS
-#   add -ltirpc to LDLIBS
+#   add -I/usr/include/tirpc
+        to CFLAGS
+#   add -ltirpc
+        to LDLIBS
 
 The following C libraries are included in name_svc.c
 #include <stdio.h>

@@ -21,6 +21,7 @@ Matrix matrix1, matrix2;
 /** Function Prototypes **/
 void read_input_file(const int);
 void write_output_file(const Matrix *);
+void print_matrix(Matrix);
 
 void
 matrix_prog_1(char *host, const char *op)
@@ -37,7 +38,7 @@ matrix_prog_1(char *host, const char *op)
 
 	if(strcasecmp(op, ADD_OPERATION) == 0){
 		
-		Matrix *result_1;
+		Matrix *result_1 = NULL;
 		MatrixPair matrix_add_1_arg;
 		matrix_add_1_arg.matrix1 = matrix1;
 		matrix_add_1_arg.matrix2 = matrix2;
@@ -52,7 +53,7 @@ matrix_prog_1(char *host, const char *op)
 	}
 	else if(strcasecmp(op, MUL_OPERATION) == 0){
 
-		Matrix *result_2;
+		Matrix *result_2 = NULL;
 		MatrixPair matrix_mul_1_arg;
 		matrix_mul_1_arg.matrix1 = matrix1;
 		matrix_mul_1_arg.matrix2 = matrix2;
@@ -68,7 +69,7 @@ matrix_prog_1(char *host, const char *op)
 	}
 	else if(strcasecmp(op, INVERSE_OPERATION) == 0){
 		
-		Matrix *result_3;
+		Matrix *result_3 = NULL;
 		Matrix matrix_inverse_1_arg;
 		matrix_inverse_1_arg = matrix1;
 
@@ -84,7 +85,7 @@ matrix_prog_1(char *host, const char *op)
 	}
 	else if(strcasecmp(op, TRANSPOSE_OPERATION) == 0){
 		
-		Matrix *result_4;
+		Matrix *result_4 = NULL;
 		Matrix matrix_transpose_1_arg;
 		matrix_transpose_1_arg = matrix1;
 
@@ -117,7 +118,7 @@ main (int argc, char *argv[])
 	}
 	
 	host = argv[1];
-	op = argv[2];
+	op = argv[2];	// command-line input matrix operation name
 
 	if(strcasecmp(op, ADD_OPERATION) == 0){	// second argument must be matrix operation name
 		read_input_file(2);
@@ -150,7 +151,7 @@ void write_output_file(const Matrix *matrix){
     // Write matrix data
     for (int i = 0; i < matrix->rows; i++) {
         for (int j = 0; j < matrix->cols; j++) {
-            fprintf(outputFile, "%d ", matrix->data[i * matrix->cols + j]);
+            fprintf(outputFile, "%.3f ", matrix->data[i * matrix->cols + j]);
         }
         fprintf(outputFile, "\n");
     }
@@ -175,7 +176,7 @@ void read_input_file(const int numOfInputMatrices){
 		matrix1.rows = rows;
 		matrix1.cols = cols;
 		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {		// 1024 being the size of allocated data array in matrix structure
-			fscanf(inputFile, "%d", &matrix1.data[i]);
+			fscanf(inputFile, "%lf", &matrix1.data[i]);
 		}
 
 		fscanf(inputFile, "%d %d", &rows, &cols);
@@ -185,7 +186,7 @@ void read_input_file(const int numOfInputMatrices){
 		matrix2.cols = cols;
 
 		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
-			fscanf(inputFile, "%d", &matrix2.data[i]);
+			fscanf(inputFile, "%lf", &matrix2.data[i]);
 		}
 	}
 	else if(numOfInputMatrices == 1){
@@ -197,7 +198,7 @@ void read_input_file(const int numOfInputMatrices){
 		matrix1.cols = cols;
 
 		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
-			fscanf(inputFile, "%d", &matrix1.data[i]);
+			fscanf(inputFile, "%lf", &matrix1.data[i]);
 		}
 	}
 
@@ -205,3 +206,11 @@ void read_input_file(const int numOfInputMatrices){
 	
 }
 
+void print_matrix(struct Matrix matrix){
+    for (int i = 0; i < matrix.rows; i++) {
+        for (int j = 0; j < matrix.cols; j++) {
+            printf("%.2f ", matrix.data[i * matrix.cols + j]);
+        }
+        printf("\n");
+    }
+}

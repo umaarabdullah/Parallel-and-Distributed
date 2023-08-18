@@ -9,39 +9,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/** Macros **/
+#define ADD_OPERATION "add"
+#define MUL_OPERATION "mul"
+#define INVERSE_OPERATION "inverse"
+#define TRANSPOSE_OPERATION "transpose"
+
+/** Global Variables **/
 Matrix matrix1, matrix2;
 
 /** Function Prototypes **/
-void read_input_file(char *in);
+void read_input_file(const int);
+void write_output_file(const Matrix *);
 
 void
-matrix_prog_1(char *host)
+matrix_prog_1(char *host, const char *op)
 {
 	CLIENT *clnt;
-	Matrix  *result_1;
-	MatrixPair matrix_add_1_arg;
-	Matrix  *result_2;
-	MatrixPair  matrix_mul_1_arg;
-	Matrix  *result_3;
-	Matrix  matrix_inverse_1_arg;
-	Matrix  *result_4;
-	Matrix  matrix_transpose_1_arg;
-
-	matrix_add_1_arg.matrix1 = matrix1;
-	matrix_add_1_arg.matrix2 = matrix2;
-
-	// for (int i = 0; i < matrix_add_1_arg.matrix1.rows; i++) {
-	// 	for (int j = 0; j < matrix_add_1_arg.matrix1.cols; j++) {
-	// 		printf("%d ", matrix_add_1_arg.matrix1.data[i * matrix_add_1_arg.matrix1.cols + j]);
-	// 	}
-	// 	printf("\n");
-	// }
-	// for (int i = 0; i < matrix_add_1_arg.matrix2.rows; i++) {
-	// 	for (int j = 0; j < matrix_add_1_arg.matrix2.cols; j++) {
-	// 		printf("%d ", matrix_add_1_arg.matrix2.data[i * matrix_add_1_arg.matrix2.cols + j]);
-	// 	}
-	// 	printf("\n");
-	// }
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, MATRIX_PROG, MATRIX_VERS, "udp");
@@ -51,50 +35,70 @@ matrix_prog_1(char *host)
 	}
 #endif	/* DEBUG */
 
-	result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
-	// if (result_1 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
-	// if (result_2 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
-	// if (result_3 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
-	// if (result_4 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
+	if(strcasecmp(op, ADD_OPERATION) == 0){
+		
+		Matrix *result_1;
+		MatrixPair matrix_add_1_arg;
+		matrix_add_1_arg.matrix1 = matrix1;
+		matrix_add_1_arg.matrix2 = matrix2;
 
-	/******Malloc in the client side is causing the problem
-	 * 	Not being consistent on the server side if memory is allocated dynamically
-	*******/
-
-
-	// print the result
-	// for(int i=0; i<sizeof(result_1->data); i++){
-	// 	printf("%d ", result_1->data[i]);
-	// }
-
-	for (int i = 0; i < matrix1.rows; i++) {
-		for (int j = 0; j < matrix1.cols; j++) {
-			printf("%d ", matrix1.data[i * matrix1.cols + j]);
+		result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
+		if (result_1 == (Matrix *) NULL) {
+			clnt_perror (clnt, "call failed");
 		}
-		printf("\n");
+
+		if(result_1 != NULL)
+			write_output_file(result_1);
 	}
-	for (int i = 0; i < matrix2.rows; i++) {
-		for (int j = 0; j < matrix2.cols; j++) {
-			printf("%d ", matrix2.data[i * matrix2.cols + j]);
+	else if(strcasecmp(op, MUL_OPERATION) == 0){
+
+		Matrix *result_2;
+		MatrixPair matrix_mul_1_arg;
+		matrix_mul_1_arg.matrix1 = matrix1;
+		matrix_mul_1_arg.matrix2 = matrix2;
+
+		result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
+		if (result_2 == (Matrix *) NULL) {
+			clnt_perror (clnt, "call failed");
 		}
-		printf("\n");
+
+		if(result_2 != NULL)
+			write_output_file(result_2);
+		
+	}
+	else if(strcasecmp(op, INVERSE_OPERATION) == 0){
+		
+		Matrix *result_3;
+		Matrix matrix_inverse_1_arg;
+		matrix_inverse_1_arg = matrix1;
+
+		result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
+		if (result_3 == (Matrix *) NULL) {
+			clnt_perror (clnt, "call failed");
+			fprintf(stderr, "Matrix is not invertible !\n");
+		}
+
+		if(result_3 != NULL)
+			write_output_file(result_3);
+		
+	}
+	else if(strcasecmp(op, TRANSPOSE_OPERATION) == 0){
+		
+		Matrix *result_4;
+		Matrix matrix_transpose_1_arg;
+		matrix_transpose_1_arg = matrix1;
+
+		result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
+		if (result_4 == (Matrix *) NULL) {
+			clnt_perror (clnt, "call failed");
+		}
+
+		if(result_4 != NULL)
+			write_output_file(result_4);
 	}
 
-	free(matrix1.data);
-	free(matrix2.data);
-	// free(result_1->data);	// can cause seg fault
-
+	
+	
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
@@ -105,63 +109,72 @@ int
 main (int argc, char *argv[])
 {
 	char *host;
-	char *op;
+	char *op;		/** add, mul, inverse, transpose **/
 
 	if (argc < 2) {
 		printf ("usage: %s server_host\n", argv[0]);
 		exit (1);
 	}
+	
 	host = argv[1];
 	op = argv[2];
 
-	read_input_file(in);
-
-	printf("Matrix Operation: %s\n\n", op);
-
-	if(strcmp(op, "matrix_add") == 0){	// second argument must be matrix operation name
-
+	if(strcasecmp(op, ADD_OPERATION) == 0){	// second argument must be matrix operation name
+		read_input_file(2);
 	}
-	else if(strcmp(op, "matrix_mul") == 0){
-
+	else if(strcasecmp(op, MUL_OPERATION) == 0){
+		read_input_file(2);
 	}
-	else if(strcmp(op, "matrix_inverse") == 0){
-		
+	else if(strcasecmp(op, INVERSE_OPERATION) == 0){
+		read_input_file(1);
 	}
-	else if(strcmp(op, "matrix_transpose") == 0){
-		
+	else if(strcasecmp(op, TRANSPOSE_OPERATION) == 0){
+		read_input_file(1);
 	}
 
-	matrix_prog_1 (host);
+	matrix_prog_1 (host, op);
 exit (0);
 }
 
-void read_input_file(char *in){
+void write_output_file(const Matrix *matrix){
+    
+	FILE *outputFile = fopen("IO/output.txt", "w");
+    if (outputFile == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    // Write dimensions
+    fprintf(outputFile, "%d %d\n", matrix->rows, matrix->cols);
+
+    // Write matrix data
+    for (int i = 0; i < matrix->rows; i++) {
+        for (int j = 0; j < matrix->cols; j++) {
+            fprintf(outputFile, "%d ", matrix->data[i * matrix->cols + j]);
+        }
+        fprintf(outputFile, "\n");
+    }
+
+    fclose(outputFile);
+}
+
+void read_input_file(const int numOfInputMatrices){
 
 	// Open the input file
-	FILE *inputFile = fopen(in, "r");
+	FILE *inputFile = fopen("IO/input.txt", "r");
 	if (inputFile == NULL) {
 		perror("Error opening file");
-		return 1;
+		return;
 	}
 
-	int flag;	// flag indicates how many matrices in input file
-	fscanf(inputFile, "%d", &flag);
-
-	if(flag == 2){
+	if(numOfInputMatrices == 2){
 		int rows, cols, totalElements;
 		fscanf(inputFile, "%d %d", &rows, &cols);
-
 		totalElements = rows * cols;
 
 		matrix1.rows = rows;
 		matrix1.cols = cols;
-		matrix1.data = (int *)malloc(totalElements * sizeof(int));
-		if (matrix1.data == NULL) {
-			fprintf(stderr, "Memory allocation failed\n");
-			return 1;
-		}
-
-		for (int i = 0; i < totalElements; i++) {
+		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {		// 1024 being the size of allocated data array in matrix structure
 			fscanf(inputFile, "%d", &matrix1.data[i]);
 		}
 
@@ -170,56 +183,25 @@ void read_input_file(char *in){
 
 		matrix2.rows = rows;
 		matrix2.cols = cols;
-		matrix2.data = (int *)malloc(totalElements * sizeof(int));
-		if (matrix2.data == NULL) {
-			fprintf(stderr, "Memory allocation failed\n");
-			return 1;
-		}
 
-		for (int i = 0; i < totalElements; i++) {
+		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
 			fscanf(inputFile, "%d", &matrix2.data[i]);
 		}
-
-		// for (int i = 0; i < matrix1.rows; i++) {
-		// 	for (int j = 0; j < matrix1.cols; j++) {
-		// 		printf("%d ", matrix1.data[i * matrix1.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
-
-		// for (int i = 0; i < matrix2.rows; i++) {
-		// 	for (int j = 0; j < matrix2.cols; j++) {
-		// 		printf("%d ", matrix2.data[i * matrix2.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
 	}
-	else if(flag == 1){
+	else if(numOfInputMatrices == 1){
 		int rows, cols, totalElements;
 		fscanf(inputFile, "%d %d", &rows, &cols);
-
 		totalElements = rows * cols;
 
 		matrix1.rows = rows;
 		matrix1.cols = cols;
-		matrix1.data = (int *)malloc(totalElements * sizeof(int));
-		if (matrix1.data == NULL) {
-			fprintf(stderr, "Memory allocation failed\n");
-			return 1;
-		}
 
-		for (int i = 0; i < totalElements; i++) {
+		for (int i = 0; i < totalElements && i < sizeof(matrix1.data); i++) {
 			fscanf(inputFile, "%d", &matrix1.data[i]);
 		}
-
-		// for (int i = 0; i < matrix1.rows; i++) {
-		// 	for (int j = 0; j < matrix1.cols; j++) {
-		// 		printf("%d ", matrix1.data[i * matrix1.cols + j]);
-		// 	}
-		// 	printf("\n");
-		// }
 	}
 
 	fclose(inputFile);	// Close the file
 	
 }
+

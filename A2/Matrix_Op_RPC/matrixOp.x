@@ -2,7 +2,7 @@
 struct Matrix {
     int rows;
     int cols;
-    int data[1024];
+    double data[100];   /* Had to reduce size of array due to UDP datagram data limit */
 };
 
 struct MatrixPair {
