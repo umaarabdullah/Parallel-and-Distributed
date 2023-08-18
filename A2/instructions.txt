@@ -1,0 +1,12 @@
+1. First install the required packages
+    chmod +x install_packages.sh
+    ./install_packages
+
+2. Then run run_server.sh using the following commands
+    ./run_server.sh
+
+3. Then run the desired matrix operation on client and check output.txt file in IO folder
+    ./run_add
+    ./run_mul
+    ./run_inverse
+    ./run_transpose

@@ -14,6 +14,9 @@ double determinant(int, double []);
 Matrix *
 matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 {
+
+    printf("RPC : matrix_add_1_svc invoked\n");
+
 	static Matrix result;
 
 	if (argp == NULL) {
@@ -53,6 +56,8 @@ matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 Matrix *
 matrix_mul_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 {
+    printf("RPC : matrix_mul_1_svc invoked\n");
+
 	static Matrix result;
 
 	// Check matrix dimensions for multiplication
@@ -81,6 +86,8 @@ matrix_mul_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 Matrix *
 matrix_inverse_1_svc(Matrix *argp, struct svc_req *rqstp)
 {
+    printf("RPC : matrix_inverse_1_svc invoked\n");
+
 	static Matrix result;
 
 	// Check if the matrix is square
@@ -112,6 +119,8 @@ matrix_inverse_1_svc(Matrix *argp, struct svc_req *rqstp)
 Matrix *
 matrix_transpose_1_svc(Matrix *argp, struct svc_req *rqstp)
 {
+    printf("RPC : matrix_transpose_1_svc invoked\n");
+
 	static Matrix result;
 
     // Check if argp is NULL
