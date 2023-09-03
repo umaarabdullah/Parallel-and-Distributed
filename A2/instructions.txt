@@ -3,10 +3,8 @@
     ./install_packages
 
 2. Then run run_server.sh using the following commands
+    chmod +x run_server.sh
     ./run_server.sh
 
-3. Then run the desired matrix operation on client and check output.txt file in IO folder
-    ./run_add
-    ./run_mul
-    ./run_inverse
-    ./run_transpose
+3. Then run matrix operations on client and check output.txt file in IO folder sorted in
+terms of timestamps.

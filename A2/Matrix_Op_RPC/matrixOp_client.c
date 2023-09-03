@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h> 
+#include <time.h>
 
 /** Macros **/
 #define ADD_OPERATION "Matrix Addition\n"
@@ -103,13 +104,34 @@ main (int argc, char *argv[])
 
 	read_input_file();		// read input matrices from file and into global variables matrix1 and matrix2
 
-	matrix_prog_1 (host);
-exit (0);
+	while(1){
+		printf("To Perform Matrix Operations\n");
+		char enterKey;
+		printf("Press Enter.................");
+		while ((enterKey = getchar()) != '\n' && enterKey != EOF);
+		matrix_prog_1 (host);
+		exit (0);
+	}
 }
 
 void write_output_file(int numMatrices, ...){
 
-    FILE *outputFile = fopen("IO/output.txt", "w");
+	time_t current_time;
+    struct tm *time_info;
+    char time_buffer[80];
+
+    // Get the current time
+    time(&current_time);
+    time_info = localtime(&current_time);
+
+    // Format the timestamp
+    strftime(time_buffer, sizeof(time_buffer), "%Y%m%d%H%M%S", time_info);
+
+	// Create the filename with the timestamp
+    char filename[200];
+    snprintf(filename, sizeof(filename), "IO/output_%s.txt", time_buffer);
+
+    FILE *outputFile = fopen(filename, "w");
     if (outputFile == NULL) {
         perror("Error opening file");
         return;
@@ -118,7 +140,7 @@ void write_output_file(int numMatrices, ...){
     va_list matrices;
     va_start(matrices, numMatrices);
 
-    fclose(fopen("IO/output.txt", "w"));	// Clear the file
+    // fclose(fopen("IO/output.txt", "w"));	// Clear the file
 
     for (int i = 0; i < numMatrices; i++) {
 		fprintf(outputFile, "%s", (i == 0) ? ADD_OPERATION : (i == 1) ? MUL_OPERATION : (i == 2) ? INVERSE_OPERATION : (i == 3) ? TRANSPOSE_OPERATION : "");

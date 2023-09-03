@@ -4,6 +4,8 @@
 # Parameters
 
 CLIENT = matrixOp_client
+CLIENT1 = matrixOp_client1
+CLIENT2 = matrixOp_client2
 SERVER = matrixOp_server
 
 SOURCES_CLNT.c = 
@@ -26,7 +28,7 @@ RPCGENFLAGS =
 
 # Targets 
 
-all : $(CLIENT) $(SERVER)
+all : $(CLIENT) $(CLIENT1) $(CLIENT2) $(SERVER)
 
 $(TARGETS) : $(SOURCES.x) 
 	rpcgen $(RPCGENFLAGS) $(SOURCES.x)
@@ -38,9 +40,15 @@ $(OBJECTS_SVC) : $(SOURCES_SVC.c) $(SOURCES_SVC.h) $(TARGETS_SVC.c)
 $(CLIENT) : $(OBJECTS_CLNT) 
 	$(LINK.c) -o $(CLIENT) $(OBJECTS_CLNT) $(LDLIBS) 
 
+$(CLIENT1) : $(OBJECTS_CLNT) 
+	$(LINK.c) -o $(CLIENT1) $(OBJECTS_CLNT) $(LDLIBS)
+
+$(CLIENT2) : $(OBJECTS_CLNT) 
+	$(LINK.c) -o $(CLIENT2) $(OBJECTS_CLNT) $(LDLIBS)
+
 $(SERVER) : $(OBJECTS_SVC) 
 	$(LINK.c) -o $(SERVER) $(OBJECTS_SVC) $(LDLIBS)
 
- clean:
-	 $(RM) core $(TARGETS) $(OBJECTS_CLNT) $(OBJECTS_SVC) $(CLIENT) $(SERVER)
+clean:
+	$(RM) core $(TARGETS) $(OBJECTS_CLNT) $(OBJECTS_SVC) $(CLIENT) $(SERVER)
 

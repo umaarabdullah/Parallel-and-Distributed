@@ -1,0 +1,2 @@
+cmd.exe /c start cmd.exe /c wsl.exe -- bash -c "cd Matrix_Op_RPC; make -f Makefile.matrixOp; ./matrixOp_client1 localhost; exec bash -i"
+# gnome-terminal -- bash -c "cd Matrix_Op_RPC; ./matrixOp_client localhost;"
