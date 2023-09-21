@@ -8,3 +8,9 @@
 
 3. Then run matrix operations on client and check output.txt file in IO folder sorted in
 terms of timestamps.
+
+safe - change matrix1[3,2] to 17 from 10.
+
+
+directory
+cd "/mnt/c/Users/Umaar/Documents/Parallel and Distributed/A2"

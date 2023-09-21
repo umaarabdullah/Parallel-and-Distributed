@@ -1,0 +1,2 @@
+directory
+	cd "/mnt/c/Users/Umaar/Documents/Parallel and Distributed/A3"

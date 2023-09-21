@@ -156,17 +156,12 @@ unsigned __stdcall clientThread(void* param) {
 
         // send joke to client
         if(firstMessageFlag){
-            
-            // In thread function
-            EnterCriticalSection(&criticalSection);
 
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
             strcpy(buffer,"Knock knock!\n");
             printf("%s",buffer);
             send(client_socket, buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
-
-            LeaveCriticalSection(&criticalSection);
 
             // recieve response from client
             valread = recv(client_socket, buffer, BUFFER_SIZE, 0);
@@ -319,9 +314,6 @@ unsigned __stdcall clientThread(void* param) {
                 strcpy(buffer, "nack");  // non-acknowledgement
                 send(client_socket, buffer, strlen(buffer), 0);
 
-                // In thread function
-                EnterCriticalSection(&criticalSection);
-
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 sprintf(buffer, "You are supposed to say, \"%s\". Let's try again.\n", response_text_str);
                 send(client_socket, buffer, strlen(buffer), 0);
@@ -329,14 +321,16 @@ unsigned __stdcall clientThread(void* param) {
                 visitedJoke[jokeID] = false;    // mark joke as not visited
                 firstMessageFlag = true;
 
-                LeaveCriticalSection(&criticalSection);
             }
         }
 
     }
 
     printf("Client disconnected\n");
+
+    EnterCriticalSection(&criticalSection);
     num_connected_clients--;
+    LeaveCriticalSection(&criticalSection);
 
     closesocket(client_socket);
     return 0;

@@ -12,8 +12,8 @@
 #include <unistd.h>
 #endif
 
-#define SERVER_IP "192.168.247.28"
-// #define SERVER_IP "127.0.0.1"
+// #define SERVER_IP "192.168.247.28"
+#define SERVER_IP "127.0.0.1"
 #define PORT 8080
 #define BUFFER_SIZE 1024
 

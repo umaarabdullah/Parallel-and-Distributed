@@ -37,7 +37,7 @@ matrix_prog_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
-		
+
 	Matrix *result_1 = NULL;
 	MatrixPair matrix_add_1_arg;
 	matrix_add_1_arg.matrix1 = matrix1;
@@ -45,7 +45,11 @@ matrix_prog_1(char *host)
 
 	result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
 	if (result_1 == (Matrix *) NULL) {
-		clnt_perror (clnt, "call failed");
+		clnt_perror (clnt, "add call failed");
+		result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
+	}
+	else{
+		printf("Add Operation Successful.\n");
 	}
 
 
@@ -56,7 +60,10 @@ matrix_prog_1(char *host)
 
 	result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
 	if (result_2 == (Matrix *) NULL) {
-		clnt_perror (clnt, "call failed");
+		clnt_perror (clnt, "mul call failed");
+	}
+	else{
+		printf("Mul Operation Successful.\n");
 	}
 
 		
@@ -66,8 +73,11 @@ matrix_prog_1(char *host)
 
 	result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
 	if (result_3 == (Matrix *) NULL) {
-		clnt_perror (clnt, "call failed");
+		clnt_perror (clnt, "inv call failed");
 		fprintf(stderr, "Matrix is not invertible !\n");
+	}
+	else{
+		printf("Inverse Operation Successful.\n");
 	}
 
 	
@@ -77,8 +87,12 @@ matrix_prog_1(char *host)
 
 	result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
 	if (result_4 == (Matrix *) NULL) {
-		clnt_perror (clnt, "call failed");
+		clnt_perror (clnt, "transpose call failed");
 	}
+	else{
+		printf("Transpose Operation Successful.\n");
+	}
+
 
 	if(result_1 != NULL && result_2 != NULL && result_3 != NULL && result_4 != NULL)
 		write_output_file(4, result_1, result_2, result_3, result_4);
@@ -101,15 +115,20 @@ main (int argc, char *argv[])
 	}
 	
 	host = argv[1];
-
-	read_input_file();		// read input matrices from file and into global variables matrix1 and matrix2
+	printf("Host : %s\n", host);
 
 	while(1){
+		
 		printf("To Perform Matrix Operations\n");
 		char enterKey;
 		printf("Press Enter.................");
 		while ((enterKey = getchar()) != '\n' && enterKey != EOF);
+
+		read_input_file();		// read input matrices from file and into global variables matrix1 and matrix2
 		matrix_prog_1 (host);
+
+		printf("RPC Call Successful.\n");
+
 		exit (0);
 	}
 }
