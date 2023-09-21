@@ -55,23 +55,6 @@ matrix_prog_1(char *host)
 	}
 #endif	/* DEBUG */
 
-	// result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
-	// if (result_1 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
-	// if (result_2 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
-	// if (result_3 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
-	// if (result_4 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-
 	result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
 	if (result_1 == (Matrix *) NULL) {
 		clnt_perror (clnt, "add call failed");

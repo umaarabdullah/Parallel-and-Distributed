@@ -26,27 +26,27 @@ matrix_add_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 
 	int rows, cols;
 	
-	rows = argp->matrix1.rows;
-    cols = argp->matrix1.cols;
+	rows = argp->matrix1->rows;
+    cols = argp->matrix1->cols;
 	
-	rows = argp->matrix2.rows;
-    cols = argp->matrix2.cols;
+	rows = argp->matrix2->rows;
+    cols = argp->matrix2->cols;
 
 	result.rows = rows;
 	result.cols = cols;
 
     /* Check if the matrices have the same dimensions */
-    if (argp->matrix1.rows != argp->matrix2.rows || argp->matrix1.cols != argp->matrix2.cols) {
+    if (argp->matrix1->rows != argp->matrix2->rows || argp->matrix1->cols != argp->matrix2->cols) {
         fprintf(stderr, "matrix_add_1_svc: Matrices must have the same dimensions for addition\n");
         return NULL;
     }
 
     /* Perform matrix addition */
 	int i, j;
-    for (i = 0; i < argp->matrix1.rows; i++) {
-        for (j = 0; j < argp->matrix1.cols; j++) {
-            result.data[i*result.cols + j] = argp->matrix1.data[i*argp->matrix1.cols + j] +
-                                             argp->matrix2.data[i*argp->matrix2.cols + j];
+    for (i = 0; i < argp->matrix1->rows; i++) {
+        for (j = 0; j < argp->matrix1->cols; j++) {
+            result.data[i*result.cols + j] = argp->matrix1->data[i*argp->matrix1->cols + j] +
+                                             argp->matrix2->data[i*argp->matrix2->cols + j];
         }
     }
 
@@ -61,21 +61,21 @@ matrix_mul_1_svc(MatrixPair *argp, struct svc_req *rqstp)
 	static Matrix result;
 
 	// Check matrix dimensions for multiplication
-    if (argp->matrix1.cols != argp->matrix2.rows) {
+    if (argp->matrix1->cols != argp->matrix2->rows) {
         fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
         return NULL;
     }
 
-	result.rows = argp->matrix1.rows;
-    result.cols = argp->matrix2.cols;
+	result.rows = argp->matrix1->rows;
+    result.cols = argp->matrix2->cols;
 
-    for (int i = 0; i < argp->matrix1.rows; i++) {
-        for (int j = 0; j < argp->matrix2.cols; j++) {
+    for (int i = 0; i < argp->matrix1->rows; i++) {
+        for (int j = 0; j < argp->matrix2->cols; j++) {
             result.data[i*result.cols + j] = 0;
-            for (int k = 0; k < argp->matrix1.cols; k++) {
+            for (int k = 0; k < argp->matrix1->cols; k++) {
                 result.data[i*result.cols + j] +=
-                    argp->matrix1.data[i*argp->matrix1.cols + k] *
-                    argp->matrix2.data[k*argp->matrix2.cols + j];
+                    argp->matrix1->data[i*argp->matrix1->cols + k] *
+                    argp->matrix2->data[k*argp->matrix2->cols + j];
             }
         }
     }

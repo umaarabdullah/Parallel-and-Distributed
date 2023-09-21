@@ -22,8 +22,8 @@ struct Matrix {
 typedef struct Matrix Matrix;
 
 struct MatrixPair {
-	Matrix matrix1;
-	Matrix matrix2;
+	Matrix *matrix1;
+	Matrix *matrix2;
 };
 typedef struct MatrixPair MatrixPair;
 

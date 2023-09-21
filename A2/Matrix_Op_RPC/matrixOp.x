@@ -6,8 +6,8 @@ struct Matrix {
 };
 
 struct MatrixPair {
-    Matrix matrix1;
-    Matrix matrix2;
+    Matrix *matrix1;
+    Matrix *matrix2;
 };
 
 program MATRIX_PROG {

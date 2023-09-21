@@ -31,13 +31,13 @@ matrix_prog_1(char *host)
 	CLIENT *clnt;
 	Matrix  *result_1;
 	MatrixPair  matrix_add_1_arg;
-	matrix_add_1_arg.matrix1 = matrix1;
-	matrix_add_1_arg.matrix2 = matrix2;
+	matrix_add_1_arg.matrix1 = &matrix1;
+	matrix_add_1_arg.matrix2 = &matrix2;
 
 	Matrix  *result_2;
 	MatrixPair  matrix_mul_1_arg;
-	matrix_mul_1_arg.matrix1 = matrix1;
-	matrix_mul_1_arg.matrix2 = matrix2;
+	matrix_mul_1_arg.matrix1 = &matrix1;
+	matrix_mul_1_arg.matrix2 = &matrix2;
 
 	Matrix  *result_3;
 	Matrix  matrix_inverse_1_arg;

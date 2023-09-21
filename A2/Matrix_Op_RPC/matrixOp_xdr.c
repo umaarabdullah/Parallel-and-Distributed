@@ -26,9 +26,9 @@ xdr_MatrixPair (XDR *xdrs, MatrixPair *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_Matrix (xdrs, &objp->matrix1))
+	 if (!xdr_pointer (xdrs, (char **)&objp->matrix1, sizeof (Matrix), (xdrproc_t) xdr_Matrix))
 		 return FALSE;
-	 if (!xdr_Matrix (xdrs, &objp->matrix2))
+	 if (!xdr_pointer (xdrs, (char **)&objp->matrix2, sizeof (Matrix), (xdrproc_t) xdr_Matrix))
 		 return FALSE;
 	return TRUE;
 }
