@@ -17,7 +17,7 @@ extern "C" {
 struct Matrix {
 	int rows;
 	int cols;
-	double data[100];
+	double data[30];
 };
 typedef struct Matrix Matrix;
 

@@ -134,7 +134,7 @@ main (int argc, char *argv[])
 
 		read_input_file();		// read input matrices from file and into global variables matrix1 and matrix2
 		matrix_prog_1 (host);
-		printf("RPC Call Successful.\n");
+		printf("RPC Call finished.\n");
 
 		exit (0);
 	}

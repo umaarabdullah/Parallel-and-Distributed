@@ -15,7 +15,7 @@ xdr_Matrix (XDR *xdrs, Matrix *objp)
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->cols))
 		 return FALSE;
-	 if (!xdr_vector (xdrs, (char *)objp->data, 100,
+	 if (!xdr_vector (xdrs, (char *)objp->data, 30,
 		sizeof (double), (xdrproc_t) xdr_double))
 		 return FALSE;
 	return TRUE;
