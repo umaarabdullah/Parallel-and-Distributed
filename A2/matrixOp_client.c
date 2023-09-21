@@ -29,23 +29,6 @@ void
 matrix_prog_1(char *host)
 {
 	CLIENT *clnt;
-	Matrix  *result_1;
-	MatrixPair  matrix_add_1_arg;
-	matrix_add_1_arg.matrix1 = matrix1;
-	matrix_add_1_arg.matrix2 = matrix2;
-
-	Matrix  *result_2;
-	MatrixPair  matrix_mul_1_arg;
-	matrix_mul_1_arg.matrix1 = matrix1;
-	matrix_mul_1_arg.matrix2 = matrix2;
-
-	Matrix  *result_3;
-	Matrix  matrix_inverse_1_arg;
-	matrix_inverse_1_arg = matrix1;
-
-	Matrix  *result_4;
-	Matrix  matrix_transpose_1_arg;
-	matrix_transpose_1_arg = matrix1;
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, MATRIX_PROG, MATRIX_VERS, "udp");
@@ -55,22 +38,10 @@ matrix_prog_1(char *host)
 	}
 #endif	/* DEBUG */
 
-	// result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
-	// if (result_1 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
-	// if (result_2 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
-	// if (result_3 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
-	// result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
-	// if (result_4 == (Matrix *) NULL) {
-	// 	clnt_perror (clnt, "call failed");
-	// }
+	Matrix *result_1 = NULL;
+	MatrixPair matrix_add_1_arg;
+	matrix_add_1_arg.matrix1 = matrix1;
+	matrix_add_1_arg.matrix2 = matrix2;
 
 	result_1 = matrix_add_1(&matrix_add_1_arg, clnt);
 	if (result_1 == (Matrix *) NULL) {
@@ -80,6 +51,13 @@ matrix_prog_1(char *host)
 	else{
 		printf("Add Operation Successful.\n");
 	}
+
+
+	Matrix *result_2 = NULL;
+	MatrixPair matrix_mul_1_arg;
+	matrix_mul_1_arg.matrix1 = matrix1;
+	matrix_mul_1_arg.matrix2 = matrix2;
+
 	result_2 = matrix_mul_1(&matrix_mul_1_arg, clnt);
 	if (result_2 == (Matrix *) NULL) {
 		clnt_perror (clnt, "mul call failed");
@@ -87,6 +65,12 @@ matrix_prog_1(char *host)
 	else{
 		printf("Mul Operation Successful.\n");
 	}
+
+		
+	Matrix *result_3 = NULL;
+	Matrix matrix_inverse_1_arg;
+	matrix_inverse_1_arg = matrix1;
+
 	result_3 = matrix_inverse_1(&matrix_inverse_1_arg, clnt);
 	if (result_3 == (Matrix *) NULL) {
 		clnt_perror (clnt, "inv call failed");
@@ -95,6 +79,12 @@ matrix_prog_1(char *host)
 	else{
 		printf("Inverse Operation Successful.\n");
 	}
+
+	
+	Matrix *result_4 = NULL;
+	Matrix matrix_transpose_1_arg;
+	matrix_transpose_1_arg = matrix1;
+
 	result_4 = matrix_transpose_1(&matrix_transpose_1_arg, clnt);
 	if (result_4 == (Matrix *) NULL) {
 		clnt_perror (clnt, "transpose call failed");
@@ -103,9 +93,11 @@ matrix_prog_1(char *host)
 		printf("Transpose Operation Successful.\n");
 	}
 
+
 	if(result_1 != NULL && result_2 != NULL && result_3 != NULL && result_4 != NULL)
 		write_output_file(4, result_1, result_2, result_3, result_4);
 
+	
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
@@ -134,12 +126,12 @@ main (int argc, char *argv[])
 
 		read_input_file();		// read input matrices from file and into global variables matrix1 and matrix2
 		matrix_prog_1 (host);
+
 		printf("RPC Call Successful.\n");
 
 		exit (0);
 	}
 }
-
 
 void write_output_file(int numMatrices, ...){
 
