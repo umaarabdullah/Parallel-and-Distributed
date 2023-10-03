@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "matrixop.h": "c"
+        "matrixop.h": "c",
+        "winsock2.h": "c"
     }
 }

@@ -161,7 +161,7 @@ unsigned __stdcall clientThread(void* param) {
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
             strcpy(buffer,"Knock knock!\n");
             printf("%s",buffer);
-            send(client_socket, buffer, strlen(buffer), 0);
+            send(client_socket, buffer, strlen(buffer), 0); printf("after send\n");
             memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
 
             // recieve response from client
@@ -190,6 +190,7 @@ unsigned __stdcall clientThread(void* param) {
                 send(client_socket, buffer, strlen(buffer), 0);
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 firstMessageFlag = true;
+                for(int i=0; i<50000000; i++);      // delay
             }
         }
         else{   // fetch jokes from database
@@ -321,7 +322,7 @@ unsigned __stdcall clientThread(void* param) {
                 memset(buffer, 0, BUFFER_SIZE); // Clear the buffer
                 visitedJoke[jokeID] = false;    // mark joke as not visited
                 firstMessageFlag = true;
-
+                for(int i=0; i<50000000; i++);      // delay
             }
         }
 
