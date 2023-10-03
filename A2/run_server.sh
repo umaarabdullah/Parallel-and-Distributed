@@ -1,4 +1,4 @@
-# sudo service rpcbind start
+sudo service rpcbind start
 
 # give execute permission
 chmod +x run_client1.sh run_client2.sh;
