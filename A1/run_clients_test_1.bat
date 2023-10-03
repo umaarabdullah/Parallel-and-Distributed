@@ -2,7 +2,7 @@
 
 rem Test if all 30 jokes are sent and received
 
-start "server" cmd /k cd /D "Client_Server_Parallel" ^& make run_server
+@REM start "server" cmd /k cd /D "Client_Server_Parallel" ^& make run_server
 
 timeout /t 5
 
