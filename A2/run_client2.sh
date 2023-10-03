@@ -1,3 +1,3 @@
-cmd.exe /c start cmd.exe /c wsl.exe -- bash -c "cd Matrix_Op_RPC; make -f Makefile.matrixOp; ./matrixOp_client2 192.168.22.10; exec bash -i"      # doesnt close  terminal after execution
+cmd.exe /c start cmd.exe /c wsl.exe -- bash -c "cd Matrix_Op_RPC; make -f Makefile.matrixOp; ./matrixOp_client2 192.168.22.28; exec bash -i"      # doesnt close  terminal after execution
 # cmd.exe /c start cmd.exe /c wsl.exe -- bash -c "cd Matrix_Op_RPC; make -f Makefile.matrixOp; ./matrixOp_client2 localhost;"     # closes terminal after execution
 # gnome-terminal -- bash -c "cd Matrix_Op_RPC; ./matrixOp_client localhost;"
