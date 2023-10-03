@@ -1,3 +1,6 @@
+sudo service rpcbind start
+chmod +x run_client1.sh run_client2.sh;
+
 # List of .sh files to run
 sh_files=("run_client1.sh" "run_client2.sh")
 
