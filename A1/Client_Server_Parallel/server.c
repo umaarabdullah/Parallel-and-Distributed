@@ -8,7 +8,7 @@
 #include "sqlite/sqlite3.h"
 #include "windows.h"
 
-#define SERVER_IP "192.168.22.28"
+#define SERVER_IP "192.168.22.10"
 // #define SERVER_IP "127.0.0.1"
 
 #define PORT 8080
