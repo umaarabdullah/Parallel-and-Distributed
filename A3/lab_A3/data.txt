@@ -1,0 +1,13 @@
+seqential execution time: 3.545542 seconds
+
+parallel execution time: 
+        2 workers  - 3.114080 seconds
+        4 workers  - 1.734474 seconds
+        6 workers  - 1.173696 seconds
+        8 workers  - 0.885861 seconds
+        10 workers - 0.778416 seconds
+        12 workers - 0.819935 seconds
+
+Speedup = Sequential Execution Time / Parallel Execution Time
+
+
