@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define NUM_SPAWNS 3
+#define NUM_SPAWNS 10
 #define NUM_SAMPLES 200000000 // Number of random samples for the Monte Carlo simulation
 
 int main(int argc, char* argv[]) {
@@ -22,9 +22,10 @@ int main(int argc, char* argv[]) {
     if (parentcomm == MPI_COMM_NULL) {
         /* Create n more processes - this executable must be called master.exe for this to work. */
         MPI_Comm_spawn("master", MPI_ARGV_NULL, np, MPI_INFO_NULL, 0, MPI_COMM_WORLD, &intercomm, errcodes);
-        printf("I'm the parent.\n");
+        // printf("I'm the parent.\n");
     } else {
-        printf("I'm the spawned.\n");
+        // printf("I'm the spawned.\n");
+
         // Initialize random number generator with a unique seed for each process
         srand(time(NULL) + MPI_Wtime());
 
@@ -51,11 +52,11 @@ int main(int argc, char* argv[]) {
 
         // Calculate and print the total execution time for this process
         double total_execution_time = end_time - start_time;
-        printf("Total execution time by Process %d: %lf seconds\n", rank, total_execution_time);
+        // printf("Total execution time by Process %d: %lf seconds\n", rank, total_execution_time);
 
         // Use MPI_Allreduce to find the maximum execution time among all processes
         double max_execution_time;
-        /* The total parallel execution time (T_total) would be the maximum time among all processes because parallel processes run concurrently, and the total execution time is determined by the slowest process. */
+        /** The total parallel execution time (T_total) would be the maximum time among all processes because parallel processes run concurrently, and the total execution time is determined by the slowest process. **/
         MPI_Allreduce(&total_execution_time, &max_execution_time, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);          
         
         if (rank == 0) {

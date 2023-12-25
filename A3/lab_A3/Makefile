@@ -23,7 +23,7 @@ build_parallel_pi_spawn: parallel_pi_calc_master.c
 	mpicc parallel_pi_calc_master.c -o master
 
 run_parallel_pi_spawn: build_parallel_pi_spawn
-	mpirun -np 1 ./master
+	mpirun --oversubscribe -np 1 ./master
 
 clean:
 	rm -f *.o $(TARGET)

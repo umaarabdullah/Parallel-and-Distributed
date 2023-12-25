@@ -12,5 +12,5 @@ terms of timestamps.
 safe - change matrix1[3,2] to 17 from 10.
 
 
-directory
+navigate to current working directory (Parallel and Distributed System)
 cd "/mnt/c/Users/Umaar/Documents/Parallel and Distributed/A2"
