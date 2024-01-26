@@ -1,3 +1,4 @@
 1. Double Click on run.bat on a windows machine
 2. One server process will run and two client process will run
-3. First request the encrypted text from server and then request server to decrypt it
+3. First request the encrypted text from server and then request server to decrypt it using any two of the
+	decryption methods.
