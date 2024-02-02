@@ -1,5 +1,10 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.*;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class RMIClient
 {
@@ -28,15 +33,31 @@ public class RMIClient
                     int userInput = scanner.nextInt();
                     scanner.nextLine(); // Consume the newline character
 
+                    String filePath1 = "encryptedCipher.txt";
+                    String filePath2 = "ceasar.txt";
+                    String filePath3 = "vignerere.txt";
+
                     switch (userInput) {
                         case 1:
                             encrypted_message = remoteObject.requestEncryptedMessage();
-                            System.out.println("Response from Server: \n" + encrypted_message);
+                            // System.out.println("Response from Server: \n" + encrypted_message);
+                            try (FileWriter writer = new FileWriter(filePath1)) {
+                                writer.write(encrypted_message);
+                                writer.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             break;
                         case 2:
                             if(!encrypted_message.isEmpty()){
                                 decrypted_message = remoteObject.decryptWithCaesarCipher(encrypted_message, "GORDIAN");
-                                System.out.println("Decrypted using Ceasar Cipher: \n" + decrypted_message);
+                                // System.out.println("Decrypted using Ceasar Cipher: \n" + decrypted_message);
+                                try (FileWriter writer = new FileWriter(filePath2)) {
+                                    writer.write(decrypted_message);
+                                    writer.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             else
                                 System.out.println("Encrypted text not available. Request from server !");
@@ -44,7 +65,13 @@ public class RMIClient
                         case 3:
                             if(!encrypted_message.isEmpty()){
                                 decrypted_message = remoteObject.decryptWithVigenereCipher(encrypted_message, "GORDIAN");
-                                System.out.println("Decrypted using Vigenere Cipher: \n" + decrypted_message);
+                                // System.out.println("Decrypted using Vigenere Cipher: \n" + decrypted_message);
+                                try (FileWriter writer = new FileWriter(filePath3)) {
+                                    writer.write(decrypted_message);
+                                    writer.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             else
                                 System.out.println("Encrypted text not available. Request from server !");

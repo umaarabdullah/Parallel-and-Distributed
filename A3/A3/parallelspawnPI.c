@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Receive and sum the local counts from all worker processes
-    for (int i = 0; i < num_procs - 1; i++) {
+    for (int i = 0; i < num_procs; i++) {
         int local_circle_count = 0;
         MPI_Recv(&local_circle_count, 1, MPI_INT, MPI_ANY_SOURCE, 0, inter_comm, MPI_STATUS_IGNORE);
         global_circle_count += local_circle_count;

@@ -22,8 +22,8 @@ parallelspawnBuild: parallelspawnPI.c
 workerBuild: worker.c
 	mpicc -o worker worker.c
 
-parallelspawnRun: parallelspawnBuild
-	mpirun --oversubscribe -np 10 ./parallelspawnPI
+parallelspawnRun: parallelspawnBuild workerBuild
+	mpirun --oversubscribe -np 4 ./parallelspawnPI
 
 clean:
 	rm -f *.o

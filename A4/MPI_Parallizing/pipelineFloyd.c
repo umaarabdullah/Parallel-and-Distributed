@@ -7,6 +7,7 @@
 
 int graph[MAX_NODES][MAX_NODES];
 
+// Function to perform the Floyd-Warshall algorithm using pipeline strategy
 void floyd_pipeline(const char* inputFileName, const char* outputFileName, int graphSize);
 
 int main(int argc, char* argv[]) {
@@ -14,6 +15,7 @@ int main(int argc, char* argv[]) {
 
     int n = 4;
 
+    // Call the function to perform the Floyd-Warshall algorithm using the pipeline strategy
     floyd_pipeline("input.txt", "output.txt", n);
 
     MPI_Finalize();
@@ -64,6 +66,7 @@ void floyd_pipeline(const char* inputFileName, const char* outputFileName, int g
         // Broadcast the entire matrix to all processes
         MPI_Bcast(graph, n * n, MPI_INT, 0, MPI_COMM_WORLD);
 
+        // Each process updates its portion of the matrix using the pipeline strategy
         for (int i = rank; i < n; i += size) {
             for (int j = 0; j < n; j++) {
                 if (graph[i][k] + graph[k][j] < graph[i][j]) {

@@ -87,6 +87,11 @@ void floydWarshallMPI(const char* inputFileName, const char* outputFileName, int
             }
         }
 
+        // MPI_Allgather is used to gather data from all processes and distribute it to all processes.
+        // In this case, each process contributes a portion of the updated 'graph' matrix computed
+        // during the Floyd-Warshall algorithm. MPI_IN_PLACE is used as the send buffer, indicating
+        // that each process receives data in the same buffer it sent from. The gathered data is
+        // stored in the 'graph' array of the root process (rank 0) for further iterations.
         MPI_Allgather(MPI_IN_PLACE, chunk_size * n, MPI_INT, graph[0], chunk_size * n, MPI_INT, MPI_COMM_WORLD);
     }
 

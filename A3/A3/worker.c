@@ -23,6 +23,10 @@ int main(int argc, char* argv[]) {
     int npoints;
     int local_circle_count = 0;
     double x, y;
+
+    // Measure the start time
+    double start_time = MPI_Wtime();
+
     // Receive the broadcasted number from the master
     MPI_Recv(&npoints, 1, MPI_INT, 0, 0, parent, MPI_STATUS_IGNORE);
 
@@ -42,6 +46,12 @@ int main(int argc, char* argv[]) {
 
     // Send the rank and received number back to the master
     MPI_Send(&local_circle_count, 1, MPI_INT, 0, 0, parent);
+
+    // Measure the end time
+    double end_time = MPI_Wtime();
+
+    double cpu_time_used = end_time - start_time;
+    printf("Execution Time worker %d: %lf seconds\n", rank, cpu_time_used);
 
     // printf("Worker %d received number from master: %d\n", rank, npoints);
 
